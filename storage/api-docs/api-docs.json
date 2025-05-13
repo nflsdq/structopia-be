@@ -1,0 +1,1632 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Structopia API Documentation",
+        "description": "API documentation for Structopia application",
+        "contact": {
+            "email": "admin@structopia.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register pengguna baru",
+                "description": "Mendaftarkan pengguna baru ke dalam sistem. Role 'admin' hanya bisa dibuat oleh admin yang sudah ada.",
+                "operationId": "8a56853624e025573120a09a4c75d468",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "role": {
+                                        "description": "Role pengguna. 'admin' hanya bisa dibuat oleh admin yang sudah ada.",
+                                        "type": "string",
+                                        "enum": [
+                                            "student",
+                                            "admin"
+                                        ],
+                                        "example": "student"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Registrasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User registered successfully"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "student"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdefghijklmnopqrstuvwxyz"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    },
+                    "403": {
+                        "description": "Unauthorized - Hanya admin yang dapat membuat akun admin baru"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login pengguna",
+                "description": "Login pengguna ke dalam sistem",
+                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdefghijklmnopqrstuvwxyz"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Kredensial tidak valid"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout pengguna",
+                "description": "Logout pengguna dari sistem",
+                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get informasi pengguna",
+                "description": "Mendapatkan informasi pengguna yang sedang login",
+                "operationId": "7c1cf647d76fad4b3eb1549fa4fe2f4c",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan data pengguna",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "john@example.com"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/badges": {
+            "get": {
+                "tags": [
+                    "Badges"
+                ],
+                "summary": "Dapatkan semua badge",
+                "description": "Mendapatkan daftar semua badge yang tersedia. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "008f4b683e773cba1814e20383773fe7",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan daftar badge",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Quick Learner"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Menyelesaikan 5 level dalam 1 hari"
+                                            },
+                                            "icon": {
+                                                "type": "string",
+                                                "example": "quick-learner.png"
+                                            },
+                                            "criteria": {
+                                                "type": "string",
+                                                "example": "complete_5_levels_in_day"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/badges": {
+            "get": {
+                "tags": [
+                    "Badges"
+                ],
+                "summary": "Dapatkan badge pengguna",
+                "description": "Mendapatkan daftar badge yang dimiliki pengguna. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "cc132ecfb7d9c52ffb056cfe41e3926b",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan badge pengguna",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Quick Learner"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Menyelesaikan 5 level dalam 1 hari"
+                                            },
+                                            "icon": {
+                                                "type": "string",
+                                                "example": "quick-learner.png"
+                                            },
+                                            "earned_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/badges/assign": {
+            "post": {
+                "tags": [
+                    "Badges"
+                ],
+                "summary": "Assign badge ke pengguna",
+                "description": "Memberikan badge kepada pengguna. Hanya dapat diakses oleh admin",
+                "operationId": "cc64009bb356e43c5e82bf09f84ab8e3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "badge_id"
+                                ],
+                                "properties": {
+                                    "badge_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Badge berhasil diberikan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Badge assigned successfully"
+                                        },
+                                        "badge": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Quick Learner"
+                                                },
+                                                "earned_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "403": {
+                        "description": "Forbidden - Hanya admin yang diizinkan"
+                    },
+                    "404": {
+                        "description": "Badge tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api": {
+            "get": {
+                "tags": [
+                    "Home"
+                ],
+                "summary": "Get API information",
+                "description": "Returns basic information about the API",
+                "operationId": "getApiInfo",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Welcome to Structopia API"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "example": "1.0"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "active"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/leaderboard": {
+            "get": {
+                "tags": [
+                    "Leaderboard"
+                ],
+                "summary": "Dapatkan papan peringkat",
+                "description": "Mendapatkan daftar pengguna dengan peringkat berdasarkan skor. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "e2e02bc8d73f7e1a8dfceb1c40e0f3bd",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Jumlah data yang akan ditampilkan",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan papan peringkat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "rank": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "user": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "avatar": {
+                                                        "type": "string",
+                                                        "example": "avatar.png"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "total_score": {
+                                                "type": "integer",
+                                                "example": 1000
+                                            },
+                                            "completed_levels": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "badges_count": {
+                                                "type": "integer",
+                                                "example": 5
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/levels": {
+            "get": {
+                "tags": [
+                    "Levels"
+                ],
+                "summary": "Dapatkan semua level",
+                "description": "Mendapatkan daftar semua level pembelajaran. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "b21200cd0ebde08419a3347af27dcad7",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan daftar level",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                                "example": "Level 1: Dasar"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Pembelajaran dasar struktur data"
+                                            },
+                                            "order": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Levels"
+                ],
+                "summary": "Buat level baru",
+                "description": "Membuat level pembelajaran baru. Hanya dapat diakses oleh admin",
+                "operationId": "358e86e640b38b4360f0ed7ffa336d58",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "order"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Level 1: Dasar"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Pembelajaran dasar struktur data"
+                                    },
+                                    "order": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Level berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Level created successfully"
+                                        },
+                                        "level": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Level 1: Dasar"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Pembelajaran dasar struktur data"
+                                                },
+                                                "order": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "403": {
+                        "description": "Forbidden - Hanya admin yang diizinkan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/levels/{id}": {
+            "get": {
+                "tags": [
+                    "Levels"
+                ],
+                "summary": "Dapatkan detail level",
+                "description": "Mendapatkan detail informasi level berdasarkan ID. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "b3c3ecc8978bbd74073761046fb4f113",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID level",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan detail level",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Level 1: Dasar"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "Pembelajaran dasar struktur data"
+                                        },
+                                        "order": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "404": {
+                        "description": "Level tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Levels"
+                ],
+                "summary": "Update level",
+                "description": "Mengupdate informasi level. Hanya dapat diakses oleh admin",
+                "operationId": "4176bd984204f4faaf9389a29ef8464c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID level",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Level 1: Dasar"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Pembelajaran dasar struktur data"
+                                    },
+                                    "order": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Level berhasil diupdate",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Level updated successfully"
+                                        },
+                                        "level": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Level 1: Dasar"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Pembelajaran dasar struktur data"
+                                                },
+                                                "order": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "403": {
+                        "description": "Forbidden - Hanya admin yang diizinkan"
+                    },
+                    "404": {
+                        "description": "Level tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Levels"
+                ],
+                "summary": "Hapus level",
+                "description": "Menghapus level. Hanya dapat diakses oleh admin",
+                "operationId": "3b49e7cd9e044056aa55c17c9ac8766d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID level",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Level berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Level deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "403": {
+                        "description": "Forbidden - Hanya admin yang diizinkan"
+                    },
+                    "404": {
+                        "description": "Level tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/levels/{id}/materi": {
+            "get": {
+                "tags": [
+                    "Levels"
+                ],
+                "summary": "Dapatkan materi level",
+                "description": "Mendapatkan daftar materi untuk level tertentu. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "b8581bac8310d4d16dbc890c42a60f32",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID level",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan daftar materi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                                "example": "Pengenalan Array"
+                                            },
+                                            "content": {
+                                                "type": "string",
+                                                "example": "Array adalah struktur data..."
+                                            },
+                                            "order": {
+                                                "type": "integer",
+                                                "example": 1
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "404": {
+                        "description": "Level tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/materi/{id}": {
+            "get": {
+                "tags": [
+                    "Materi"
+                ],
+                "summary": "Dapatkan detail materi",
+                "description": "Mendapatkan detail informasi materi berdasarkan ID. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "1b08b4f11d0161e00b647f6def9c240d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID materi",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan detail materi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Pengenalan Array"
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "Array adalah struktur data..."
+                                        },
+                                        "order": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "level_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "visual",
+                                                "auditory",
+                                                "kinesthetic"
+                                            ],
+                                            "example": "visual"
+                                        },
+                                        "media_url": {
+                                            "type": "string",
+                                            "example": "https://example.com/media.mp4",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "404": {
+                        "description": "Materi tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Materi"
+                ],
+                "summary": "Update materi",
+                "description": "Mengupdate informasi materi. Hanya dapat diakses oleh admin",
+                "operationId": "1db67526a4c4169eafe6863aa57495d8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID materi",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Pengenalan Array"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Array adalah struktur data..."
+                                    },
+                                    "level_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "visual",
+                                            "auditory",
+                                            "kinesthetic"
+                                        ],
+                                        "example": "visual"
+                                    },
+                                    "media_url": {
+                                        "type": "string",
+                                        "example": "https://example.com/media.mp4",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Materi berhasil diupdate",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Materi updated successfully"
+                                        },
+                                        "materi": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Pengenalan Array"
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "Array adalah struktur data..."
+                                                },
+                                                "order": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "level_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "visual",
+                                                        "auditory",
+                                                        "kinesthetic"
+                                                    ],
+                                                    "example": "visual"
+                                                },
+                                                "media_url": {
+                                                    "type": "string",
+                                                    "example": "https://example.com/media.mp4",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "403": {
+                        "description": "Forbidden - Hanya admin yang diizinkan"
+                    },
+                    "404": {
+                        "description": "Materi tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Materi"
+                ],
+                "summary": "Hapus materi",
+                "description": "Menghapus materi. Hanya dapat diakses oleh admin",
+                "operationId": "c2906b396631c580d63576ac6df7e20d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID materi",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Materi berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Materi deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "403": {
+                        "description": "Forbidden - Hanya admin yang diizinkan"
+                    },
+                    "404": {
+                        "description": "Materi tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/materi": {
+            "post": {
+                "tags": [
+                    "Materi"
+                ],
+                "summary": "Buat materi baru",
+                "description": "Membuat materi pembelajaran baru. Hanya dapat diakses oleh admin",
+                "operationId": "27a4fc6a30da23f5da0e3cc67c8ea376",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "content",
+                                    "level_id",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Pengenalan Array"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "Array adalah struktur data..."
+                                    },
+                                    "level_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "visual",
+                                            "auditory",
+                                            "kinesthetic"
+                                        ],
+                                        "example": "visual"
+                                    },
+                                    "media_url": {
+                                        "type": "string",
+                                        "example": "https://example.com/media.mp4",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Materi berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Materi created successfully"
+                                        },
+                                        "materi": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Pengenalan Array"
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "Array adalah struktur data..."
+                                                },
+                                                "order": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "level_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "visual",
+                                                        "auditory",
+                                                        "kinesthetic"
+                                                    ],
+                                                    "example": "visual"
+                                                },
+                                                "media_url": {
+                                                    "type": "string",
+                                                    "example": "https://example.com/media.mp4",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "403": {
+                        "description": "Forbidden - Hanya admin yang diizinkan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/levels/{id}/quiz": {
+            "get": {
+                "tags": [
+                    "Quiz"
+                ],
+                "summary": "Dapatkan quiz level",
+                "description": "Mendapatkan quiz untuk level tertentu. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "1629e5ec49c0f259ece3536a25e0dded",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID level",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan quiz",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "question": {
+                                                "type": "string",
+                                                "example": "Apa itu Array?"
+                                            },
+                                            "options": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string",
+                                                    "example": "Struktur data yang menyimpan kumpulan data"
+                                                }
+                                            },
+                                            "correct_answer": {
+                                                "type": "integer",
+                                                "example": 0
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "404": {
+                        "description": "Level tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/quiz/submit": {
+            "post": {
+                "tags": [
+                    "Quiz"
+                ],
+                "summary": "Submit jawaban quiz",
+                "description": "Mengirim jawaban quiz untuk dinilai. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "2310989eb565523f31504caee1947761",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "level_id",
+                                    "answers"
+                                ],
+                                "properties": {
+                                    "level_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "answers": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "question_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "answer": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Quiz berhasil disubmit",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "score": {
+                                            "type": "integer",
+                                            "example": 80
+                                        },
+                                        "total_questions": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "correct_answers": {
+                                            "type": "integer",
+                                            "example": 8
+                                        },
+                                        "passed": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "xp_gained": {
+                                            "type": "integer",
+                                            "example": 100
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/quiz/history": {
+            "get": {
+                "tags": [
+                    "Quiz"
+                ],
+                "summary": "Dapatkan riwayat quiz",
+                "description": "Mendapatkan riwayat quiz yang telah dikerjakan. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)",
+                "operationId": "2fc231b7d0e117d9c177d5a1a2126b14",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan riwayat quiz",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "level_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "score": {
+                                                "type": "integer",
+                                                "example": 80
+                                            },
+                                            "total_questions": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "correct_answers": {
+                                                "type": "integer",
+                                                "example": 8
+                                            },
+                                            "passed": {
+                                                "type": "boolean",
+                                                "example": true
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Pengguna belum login"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "API Endpoints untuk autentikasi pengguna"
+        },
+        {
+            "name": "Badges",
+            "description": "API Endpoints untuk manajemen badge dan pencapaian. Endpoint dengan akses admin memerlukan role 'admin'"
+        },
+        {
+            "name": "Home",
+            "description": "API Endpoints for Home"
+        },
+        {
+            "name": "Leaderboard",
+            "description": "API Endpoints untuk manajemen papan peringkat. Dapat diakses oleh semua pengguna yang terautentikasi (student dan admin)"
+        },
+        {
+            "name": "Levels",
+            "description": "API Endpoints untuk manajemen level pembelajaran. Endpoint dengan akses admin memerlukan role 'admin'"
+        },
+        {
+            "name": "Materi",
+            "description": "API Endpoints untuk manajemen materi pembelajaran. Endpoint dengan akses admin memerlukan role 'admin'"
+        },
+        {
+            "name": "Quiz",
+            "description": "API Endpoints untuk manajemen quiz dan penilaian. Endpoint dengan akses admin memerlukan role 'admin'"
+        }
+    ]
+}
