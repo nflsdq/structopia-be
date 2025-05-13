@@ -22,6 +22,10 @@ class LevelController extends Controller
 
     public function store(Request $request)
     {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Hanya admin yang bisa menambah level'], 403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'order' => 'required|integer|unique:levels',
@@ -34,6 +38,10 @@ class LevelController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Hanya admin yang bisa mengubah level'], 403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'order' => 'required|integer|unique:levels,order,' . $id,
@@ -47,6 +55,10 @@ class LevelController extends Controller
 
     public function destroy($id)
     {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Hanya admin yang bisa menghapus level'], 403);
+        }
+
         $level = Level::findOrFail($id);
         $level->delete();
         return response()->json(null, 204);

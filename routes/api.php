@@ -26,15 +26,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/levels/{id}/materi', [LevelController::class, 'getMateri']);
 
     // Admin only routes
-    Route::middleware('role:admin')->group(function () {
-        Route::post('/levels', [LevelController::class, 'store']);
-        Route::put('/levels/{id}', [LevelController::class, 'update']);
-        Route::delete('/levels/{id}', [LevelController::class, 'destroy']);
+    // Route::middleware('role:admin')->group(function () {
+    //     Route::post('/levels', [LevelController::class, 'store']);
+    //     Route::put('/levels/{id}', [LevelController::class, 'update']);
+    //     Route::delete('/levels/{id}', [LevelController::class, 'destroy']);
 
-        Route::post('/materi', [MateriController::class, 'store']);
-        Route::put('/materi/{id}', [MateriController::class, 'update']);
-        Route::delete('/materi/{id}', [MateriController::class, 'destroy']);
-    });
+    //     Route::post('/materi', [MateriController::class, 'store']);
+    //     Route::put('/materi/{id}', [MateriController::class, 'update']);
+    //     Route::delete('/materi/{id}', [MateriController::class, 'destroy']);
+    // });
+
+    Route::post('/levels', [LevelController::class, 'store']);
+    Route::put('/levels/{id}', [LevelController::class, 'update']);
+    Route::delete('/levels/{id}', [LevelController::class, 'destroy']);
+    Route::post('/materi', [MateriController::class, 'store']);
+    Route::put('/materi/{id}', [MateriController::class, 'update']);
+    Route::delete('/materi/{id}', [MateriController::class, 'destroy']);
 
     // Materi
     Route::get('/materi/{id}', [MateriController::class, 'show']);
