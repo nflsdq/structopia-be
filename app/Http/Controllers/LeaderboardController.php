@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = $request->query('per_page', 10);
         $topUsers = User::where('role', 'student')
             ->orderBy('xp', 'desc')
-            ->take(10)
-            ->get(['id', 'name', 'xp', 'current_level']);
-
-        return response()->json($topUsers);
+            ->paginate($perPage);
+        return response()->json($topUsers, 200);
     }
 }
