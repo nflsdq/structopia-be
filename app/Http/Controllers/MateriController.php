@@ -10,12 +10,30 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class MateriController extends Controller
 {
-    public function show($id)
+    public function show($id, Request $request)
     {
         try {
-            $materi = Materi::findOrFail($id);
+            $user = $request->user();
+            $materi = \App\Models\Materi::findOrFail($id);
+            $level = $materi->level;
+            if ($level->order > $user->current_level) {
+                return response()->json([
+                    'message' => 'Materi ini masih terkunci. Selesaikan level sebelumnya terlebih dahulu.'
+                ], 403);
+            }
+            // Tambahkan status
+            if ($level->order < $user->current_level) {
+                $materi->status = 'unlocked';
+                $materi->keterangan = 'Sudah dibuka';
+            } elseif ($level->order == $user->current_level) {
+                $materi->status = 'ongoing';
+                $materi->keterangan = 'Sedang dikerjakan';
+            } else {
+                $materi->status = 'locked';
+                $materi->keterangan = 'Belum bisa dibuka';
+            }
             return response()->json($materi, 200);
-        } catch (ModelNotFoundException $e) {
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['message' => 'Materi tidak ditemukan'], 404);
         }
     }

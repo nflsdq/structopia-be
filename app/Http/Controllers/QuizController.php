@@ -12,10 +12,17 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class QuizController extends Controller
 {
-    public function getLevelQuiz($levelId)
+    public function getLevelQuiz($levelId, Request $request)
     {
         try {
-            $quizzes = Quiz::where('level_id', $levelId)->get();
+            $user = $request->user();
+            $level = \App\Models\Level::findOrFail($levelId);
+            if ($level->order > $user->current_level) {
+                return response()->json([
+                    'message' => 'Quiz level ini masih terkunci. Selesaikan level sebelumnya terlebih dahulu.'
+                ], 403);
+            }
+            $quizzes = \App\Models\Quiz::where('level_id', $levelId)->get();
             return response()->json($quizzes, 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Terjadi kesalahan server'], 500);

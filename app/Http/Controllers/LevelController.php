@@ -13,14 +13,44 @@ class LevelController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->query('per_page', 10);
+        $user = $request->user();
         $levels = Level::orderBy('order')->paginate($perPage);
+        $levels->getCollection()->transform(function ($level) use ($user) {
+            if ($level->order < $user->current_level) {
+                $level->status = 'unlocked';
+                $level->keterangan = 'Sudah dibuka';
+            } elseif ($level->order == $user->current_level) {
+                $level->status = 'ongoing';
+                $level->keterangan = 'Sedang dikerjakan';
+            } else {
+                $level->status = 'locked';
+                $level->keterangan = 'Belum bisa dibuka';
+            }
+            return $level;
+        });
         return response()->json($levels, 200);
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
+        $user = $request->user();
         try {
             $level = Level::findOrFail($id);
+            if ($level->order > $user->current_level) {
+                return response()->json([
+                    'message' => 'Level masih terkunci. Selesaikan level sebelumnya terlebih dahulu.'
+                ], 403);
+            }
+            if ($level->order < $user->current_level) {
+                $level->status = 'unlocked';
+                $level->keterangan = 'Sudah dibuka';
+            } elseif ($level->order == $user->current_level) {
+                $level->status = 'ongoing';
+                $level->keterangan = 'Sedang dikerjakan';
+            } else {
+                $level->status = 'locked';
+                $level->keterangan = 'Belum bisa dibuka';
+            }
             return response()->json($level, 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Level tidak ditemukan'], 404);
@@ -88,8 +118,14 @@ class LevelController extends Controller
 
     public function getMateri($id, Request $request)
     {
+        $user = $request->user();
         try {
             $level = Level::findOrFail($id);
+            if ($level->order > $user->current_level) {
+                return response()->json([
+                    'message' => 'Materi level ini masih terkunci. Selesaikan level sebelumnya terlebih dahulu.'
+                ], 403);
+            }
             $query = $level->materis();
             if ($request->has('type')) {
                 $query->where('type', $request->type);
