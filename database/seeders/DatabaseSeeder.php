@@ -15,7 +15,10 @@ class DatabaseSeeder extends Seeder
             LevelSeeder::class,
             MateriSeeder::class,
             QuizSeeder::class,
-            BadgeSeeder::class
+            BadgeSeeder::class,
+            KinestheticMateriSeeder::class,
+            VisualMateriSeeder::class,
+            AuditoryMateriSeeder::class
         ]);
     }
 }

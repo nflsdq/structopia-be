@@ -13,6 +13,14 @@ class LeaderboardController extends Controller
         $topUsers = User::where('role', 'student')
             ->orderBy('xp', 'desc')
             ->paginate($perPage);
+
+        // Add rank to each user
+        $rank = $topUsers->firstItem();
+        $topUsers->getCollection()->transform(function ($user) use (&$rank) {
+            $user->rank = $rank++;
+            return $user;
+        });
+
         return response()->json($topUsers, 200);
     }
 }

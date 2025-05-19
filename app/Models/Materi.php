@@ -14,7 +14,13 @@ class Materi extends Model
         'title',
         'type',
         'content',
-        'media_url'
+        'media_url',
+        'meta',
+        'xp_value',
+    ];
+
+    protected $casts = [
+        'meta' => 'array',
     ];
 
     public function level()

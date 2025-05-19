@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Materi
     Route::get('/materi/{id}', [MateriController::class, 'show']);
+    Route::post('/materi/{id}/complete', [MateriController::class, 'markAsCompleted']);
 
     // Quiz
     Route::get('/levels/{id}/quiz', [QuizController::class, 'getLevelQuiz']);
@@ -60,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/badges', [BadgeController::class, 'index']);
     Route::get('/user/badges', [BadgeController::class, 'getUserBadges']);
     Route::post('/user/badges/assign', [BadgeController::class, 'assignBadge']);
+    Route::post('/user/badges/check-automatic', [BadgeController::class, 'triggerAutomaticBadgeCheck']);
 
     // Leaderboard
     Route::get('/leaderboard', [LeaderboardController::class, 'index']);

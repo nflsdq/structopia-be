@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Level;
+use App\Models\UserMateriCompletion;
+use App\Models\Progress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -41,6 +43,21 @@ class LevelController extends Controller
                     'message' => 'Level masih terkunci. Selesaikan level sebelumnya terlebih dahulu.'
                 ], 403);
             }
+
+            $existingProgress = Progress::where('user_id', $user->id)
+                ->where('level_id', $level->id)
+                ->first();
+
+            if (!$existingProgress || $existingProgress->status !== 'completed') {
+                Progress::updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'level_id' => $level->id
+                    ],
+                    ['status' => 'in-progress']
+                );
+            }
+
             if ($level->order < $user->current_level) {
                 $level->status = 'unlocked';
                 $level->keterangan = 'Sudah dibuka';
@@ -126,12 +143,35 @@ class LevelController extends Controller
                     'message' => 'Materi level ini masih terkunci. Selesaikan level sebelumnya terlebih dahulu.'
                 ], 403);
             }
+
+            $existingProgress = Progress::where('user_id', $user->id)
+                ->where('level_id', $level->id)
+                ->first();
+
+            if (!$existingProgress || $existingProgress->status !== 'completed') {
+                Progress::updateOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'level_id' => $level->id
+                    ],
+                    ['status' => 'in-progress']
+                );
+            }
+
             $query = $level->materis();
             if ($request->has('type')) {
                 $query->where('type', $request->type);
             }
             $perPage = $request->query('per_page', 10);
             $materis = $query->paginate($perPage);
+
+            $materis->getCollection()->transform(function ($materiItem) use ($user) {
+                $materiItem->is_completed = UserMateriCompletion::where('user_id', $user->id)
+                    ->where('materi_id', $materiItem->id)
+                    ->exists();
+                return $materiItem;
+            });
+
             return response()->json($materis, 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Level tidak ditemukan'], 404);
